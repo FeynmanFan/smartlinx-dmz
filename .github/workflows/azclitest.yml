@@ -9,9 +9,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |-
-        echo Add other tasks to build, test, and deploy your project.
-        echo See https://aka.ms/yaml
+    - name: Build
+      run: dotnet build
+    - run: dotnet test --logger trx --results-directory "${{ runner.temp }}"
+    - uses: NasAmin/trx-parser@v0.5.0
+      if: always()
+      with:
+        TRX_PATH: "${{ runner.temp }}"
+        REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
